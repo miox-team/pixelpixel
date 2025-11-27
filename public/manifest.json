@@ -1,11 +1,12 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "PixelPixel App",
+  "name": "PixelPixel - The privacy-first image editor for the modern web",
+  "description": "Privacy-first image editor for the modern web. Blur plates, faces, and sensitive data without uploading a single byte. Client-side secure, zero latency, and completely free.",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "favicon.png",
       "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "type": "image/png"
     },
     {
       "src": "logo192.png",
@@ -18,8 +19,13 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "categories": ["photo", "utilities", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr"
 }

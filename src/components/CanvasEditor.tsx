@@ -146,7 +146,7 @@ export const CanvasEditor = ({
       </div>
 
       {/* Bottom Action Bar */}
-      <div className="bg-white border-t border-black p-4 flex justify-between items-center z-20">
+      <div className="bg-white dark:bg-gray-900 border-t border-black dark:border-white p-4 flex justify-between items-center z-20">
         <Button variant="ghost" onClick={onClose}>
           Cancel
         </Button>

@@ -22,9 +22,9 @@ export const ImageGallery = ({
   onRemoveImage,
 }: ImageGalleryProps) => {
   return (
-    <div className="bg-white border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-4 mb-6">
+    <div className="bg-white dark:bg-gray-900 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-4 mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-bold text-xs uppercase tracking-widest font-mono">
+        <h3 className="font-bold text-xs uppercase tracking-widest font-mono text-black dark:text-white">
           Images ({images.length})
         </h3>
       </div>
@@ -35,11 +35,11 @@ export const ImageGallery = ({
             key={image.id}
             className={`
               relative group cursor-pointer border-2 transition-all
-              ${selectedId === image.id ? 'border-lime-400 shadow-[4px_4px_0px_0px_rgba(163,230,53,1)]' : 'border-gray-300 hover:border-black'}
+              ${selectedId === image.id ? 'border-lime-400 dark:border-lime-500 shadow-[4px_4px_0px_0px_rgba(163,230,53,1)]' : 'border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white'}
             `}
             onClick={() => onSelectImage(image.id)}
           >
-            <div className="aspect-square overflow-hidden bg-gray-100">
+            <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
               <img
                 src={image.src}
                 alt={image.file.name}
@@ -67,7 +67,7 @@ export const ImageGallery = ({
             </button>
 
             {/* File Name */}
-            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-[8px] font-mono p-1 truncate">
+            <div className="absolute bottom-0 left-0 right-0 bg-black/70 dark:bg-white/70 text-white dark:text-black text-[8px] font-mono p-1 truncate">
               {image.file.name}
             </div>
           </div>

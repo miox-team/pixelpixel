@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import JSZip from 'jszip'
-import { GlobalStyles } from '../components/GlobalStyles'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { UploadArea } from '../components/UploadArea'
@@ -24,7 +23,7 @@ interface ImageItem {
 
 export default function App() {
   // State
-  const [images, setImages] = useState<ImageItem[]>([])
+  const [images, setImages] = useState<Array<ImageItem>>([])
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null)
   const [pixelSize, setPixelSize] = useState(12)
   const [isDragging, setIsDragging] = useState(false)
@@ -51,7 +50,7 @@ export default function App() {
   // --- FILE HANDLING ---
 
   const handleFiles = (fileList: FileList) => {
-    const newImages: ImageItem[] = Array.from(fileList).map((file) => ({
+    const newImages: Array<ImageItem> = Array.from(fileList).map((file) => ({
       id: `${Date.now()}-${Math.random()}`,
       file,
       src: URL.createObjectURL(file),
@@ -322,8 +321,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f4f5] text-neutral-900 font-display selection:bg-lime-400 selection:text-black overflow-x-hidden">
-      <GlobalStyles />
+    <div className="min-h-screen bg-[#f4f4f5] dark:bg-black text-neutral-900 dark:text-neutral-100 font-display selection:bg-lime-400 dark:selection:bg-lime-500 selection:text-black overflow-x-hidden">
       <div className="bg-noise"></div>
 
       <Header />
@@ -355,10 +353,10 @@ export default function App() {
                 canUndo={(selectedImage?.historyStep ?? 0) > 0}
               />
 
-              <div className="bg-white p-4 border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="bg-white dark:bg-gray-900 p-4 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
                 <label
                   htmlFor="add-more"
-                  className="block w-full text-center py-2 px-4 border-2 border-dashed border-gray-300 hover:border-lime-400 cursor-pointer transition-colors text-sm font-mono uppercase tracking-widest"
+                  className="block w-full text-center py-2 px-4 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-lime-400 dark:hover:border-lime-500 cursor-pointer transition-colors text-sm font-mono uppercase tracking-widest text-black dark:text-white"
                 >
                   + Add More Images
                 </label>

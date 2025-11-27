@@ -1,3 +1,11 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+
+# Sitemap
+Sitemap: https://pixelpixel.app/sitemap.xml
+
+# Disallow common non-content paths
+Disallow: /api/
+Disallow: /_next/
+Disallow: /dist/
