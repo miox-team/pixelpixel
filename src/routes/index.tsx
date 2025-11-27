@@ -326,7 +326,7 @@ export default function App() {
 
       <Header />
 
-      <main className="pt-32 pb-16 px-6 max-w-7xl mx-auto min-h-[calc(100vh-80px)] relative z-10">
+      <main className="pt-24 lg:pt-32 pb-8 lg:pb-16 px-4 lg:px-6 max-w-7xl mx-auto min-h-[calc(100vh-80px)] relative z-10">
         {images.length === 0 ? (
           <UploadArea
             isDragging={isDragging}
@@ -336,66 +336,109 @@ export default function App() {
             onFileSelect={handleFiles}
           />
         ) : (
-          <div className="flex flex-col lg:flex-row gap-8 h-full animate-in fade-in zoom-in-95 duration-500">
-            <div className="lg:w-80 flex flex-col gap-6 order-2 lg:order-1">
-              <ImageGallery
-                images={images}
-                selectedId={selectedImageId}
-                onSelectImage={setSelectedImageId}
-                onRemoveImage={handleRemoveImage}
-              />
-
-              <Toolbar
-                pixelSize={pixelSize}
-                onPixelSizeChange={setPixelSize}
-                onUndo={handleUndo}
-                onReset={handleReset}
-                canUndo={(selectedImage?.historyStep ?? 0) > 0}
-              />
-
-              <div className="bg-white dark:bg-gray-900 p-4 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-                <label
-                  htmlFor="add-more"
-                  className="block w-full text-center py-2 px-4 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-lime-400 dark:hover:border-lime-500 cursor-pointer transition-colors text-sm font-mono uppercase tracking-widest text-black dark:text-white"
-                >
-                  + Add More Images
-                </label>
-                <input
-                  id="add-more"
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => e.target.files && handleFiles(e.target.files)}
+          <div className="flex flex-col lg:flex-row gap-3 lg:gap-8 h-full animate-in fade-in zoom-in-95 duration-500">
+            {/* Mobile: Toolbar and ImageGallery above canvas */}
+            <div className="lg:w-80 flex flex-col gap-6 order-1 lg:order-1">
+              {/* Mobile: Show Toolbar first, then ImageGallery (only if more than one image) */}
+              <div className="lg:hidden flex flex-col gap-2">
+                <Toolbar
+                  pixelSize={pixelSize}
+                  onPixelSizeChange={setPixelSize}
+                  onUndo={handleUndo}
+                  onReset={handleReset}
+                  canUndo={(selectedImage?.historyStep ?? 0) > 0}
                 />
+                {images.length > 1 && (
+                  <ImageGallery
+                    images={images}
+                    selectedId={selectedImageId}
+                    onSelectImage={setSelectedImageId}
+                    onRemoveImage={handleRemoveImage}
+                  />
+                )}
+              </div>
+
+              {/* Desktop: Original sidebar layout */}
+              <div className="hidden lg:flex flex-col gap-6">
+                <ImageGallery
+                  images={images}
+                  selectedId={selectedImageId}
+                  onSelectImage={setSelectedImageId}
+                  onRemoveImage={handleRemoveImage}
+                />
+
+                <Toolbar
+                  pixelSize={pixelSize}
+                  onPixelSizeChange={setPixelSize}
+                  onUndo={handleUndo}
+                  onReset={handleReset}
+                  canUndo={(selectedImage?.historyStep ?? 0) > 0}
+                />
+
+                <div className="bg-white dark:bg-gray-900 p-4 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+                  <label
+                    htmlFor="add-more"
+                    className="block w-full text-center py-2 px-4 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-lime-400 dark:hover:border-lime-500 cursor-pointer transition-colors text-sm font-mono uppercase tracking-widest text-black dark:text-white"
+                  >
+                    + Add More Images
+                  </label>
+                  <input
+                    id="add-more"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => e.target.files && handleFiles(e.target.files)}
+                  />
+                </div>
               </div>
             </div>
 
             {selectedImage && (
-              <CanvasEditor
-                canvasRef={canvasRef}
-                containerRef={containerRef}
-                file={selectedImage.file}
-                isDrawing={isDrawing}
-                startPos={startPos}
-                currentPos={currentPos}
-                mousePos={mousePos}
-                pixelSize={pixelSize}
-                onStartDraw={startDraw}
-                onMoveDraw={moveDraw}
-                onEndDraw={endDraw}
-                onMouseLeave={handleMouseLeave}
-                onClose={() => {
-                  setImages([])
-                  setSelectedImageId(null)
-                }}
-                onDownload={handleDownload}
-                downloadButtonText={
-                  images.length === 1
-                    ? 'Download Image'
-                    : `Download All (${images.length} images as ZIP)`
-                }
-              />
+              <>
+                <CanvasEditor
+                  canvasRef={canvasRef}
+                  containerRef={containerRef}
+                  file={selectedImage.file}
+                  isDrawing={isDrawing}
+                  startPos={startPos}
+                  currentPos={currentPos}
+                  mousePos={mousePos}
+                  pixelSize={pixelSize}
+                  onStartDraw={startDraw}
+                  onMoveDraw={moveDraw}
+                  onEndDraw={endDraw}
+                  onMouseLeave={handleMouseLeave}
+                  onClose={() => {
+                    setImages([])
+                    setSelectedImageId(null)
+                  }}
+                  onDownload={handleDownload}
+                  downloadButtonText={
+                    images.length === 1
+                      ? 'Download Image'
+                      : `Download All (${images.length} images as ZIP)`
+                  }
+                />
+                
+                {/* Mobile: Add More Images button after canvas */}
+                <div className="lg:hidden bg-white dark:bg-gray-900 p-4 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] order-3">
+                  <label
+                    htmlFor="add-more-mobile"
+                    className="block w-full text-center py-2 px-4 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-lime-400 dark:hover:border-lime-500 cursor-pointer transition-colors text-sm font-mono uppercase tracking-widest text-black dark:text-white"
+                  >
+                    + Add More Images
+                  </label>
+                  <input
+                    id="add-more-mobile"
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => e.target.files && handleFiles(e.target.files)}
+                  />
+                </div>
+              </>
             )}
           </div>
         )}

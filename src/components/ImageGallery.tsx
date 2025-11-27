@@ -1,5 +1,4 @@
 import { Check, X } from 'lucide-react'
-import { Button } from './Button'
 
 interface ImageItem {
   id: string
@@ -22,24 +21,26 @@ export const ImageGallery = ({
   onRemoveImage,
 }: ImageGalleryProps) => {
   return (
-    <div className="bg-white dark:bg-gray-900 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-4 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="font-bold text-xs uppercase tracking-widest font-mono text-black dark:text-white">
+    <div className="bg-white dark:bg-gray-900 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] p-2 lg:p-4 mb-3 lg:mb-6">
+      <div className="flex justify-between items-center mb-2 lg:mb-4">
+        <h3 className="font-bold text-[10px] lg:text-xs uppercase tracking-widest font-mono text-black dark:text-white">
           Images ({images.length})
         </h3>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-60 overflow-y-auto">
+      {/* Mobile: Horizontal scroll, Desktop: Grid */}
+      <div className="flex lg:grid lg:grid-cols-2 xl:grid-cols-4 gap-2 lg:gap-3 overflow-x-auto lg:overflow-y-auto lg:max-h-60 lg:overflow-x-visible scrollbar-hide">
         {images.map((image) => (
           <div
             key={image.id}
             className={`
-              relative group cursor-pointer border-2 transition-all
+              relative group cursor-pointer border-2 transition-all shrink-0
+              w-20 h-20 lg:w-auto lg:h-auto
               ${selectedId === image.id ? 'border-lime-400 dark:border-lime-500 shadow-[4px_4px_0px_0px_rgba(163,230,53,1)]' : 'border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white'}
             `}
             onClick={() => onSelectImage(image.id)}
           >
-            <div className="aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+            <div className="w-full h-full aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
               <img
                 src={image.src}
                 alt={image.file.name}
