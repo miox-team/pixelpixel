@@ -277,13 +277,20 @@ export default function App() {
       canvas.height = currentData.height
       ctx.putImageData(currentData, 0, 0)
 
-      const dataUrl = canvas.toDataURL(IMAGE_FORMAT)
+      // Convert canvas to blob (better for mobile, avoids showing base64 in download dialog)
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((b) => resolve(b!), IMAGE_FORMAT)
+      })
+
+      const blobUrl = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.download = `pixelpixel-${image.file.name}`
-      link.href = dataUrl
+      link.href = blobUrl
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      // Clean up the blob URL after a short delay
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
       return
     }
 
@@ -312,12 +319,15 @@ export default function App() {
 
     // Generate and download ZIP
     const zipBlob = await zip.generateAsync({ type: 'blob' })
+    const blobUrl = URL.createObjectURL(zipBlob)
     const link = document.createElement('a')
     link.download = `pixelpixel-images-${Date.now()}.zip`
-    link.href = URL.createObjectURL(zipBlob)
+    link.href = blobUrl
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+    // Clean up the blob URL after a short delay
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
   }
 
   return (
