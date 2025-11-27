@@ -17,6 +17,7 @@ interface CanvasEditorProps {
   onMouseLeave?: () => void
   onClose: () => void
   onDownload: () => void
+  downloadButtonText?: string
 }
 
 export const CanvasEditor = ({
@@ -34,6 +35,7 @@ export const CanvasEditor = ({
   onMouseLeave,
   onClose,
   onDownload,
+  downloadButtonText = 'Download Image',
 }: CanvasEditorProps) => {
   // Calculate overlay style for selection area
   const getOverlayStyle = () => {
@@ -153,7 +155,7 @@ export const CanvasEditor = ({
           onClick={onDownload}
           icon={Download}
         >
-          Download Image
+          {downloadButtonText}
         </Button>
       </div>
     </div>

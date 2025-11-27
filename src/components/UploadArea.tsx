@@ -6,7 +6,7 @@ interface UploadAreaProps {
   onDragOver: (e: React.DragEvent) => void
   onDragLeave: (e: React.DragEvent) => void
   onDrop: (e: React.DragEvent) => void
-  onFileSelect: (file: File) => void
+  onFileSelect: (files: FileList) => void
 }
 
 export const UploadArea = ({
@@ -53,10 +53,10 @@ export const UploadArea = ({
         </div>
         <div className="space-y-2">
           <p className="font-bold text-2xl tracking-tight">
-            Drop your image here
+            Drop your images here
           </p>
           <p className="text-xs text-gray-400 font-mono uppercase tracking-widest">
-            JPG · PNG · WEBP · Max 50MB
+            JPG · PNG · WEBP · Max 50MB each · Multiple files
           </p>
         </div>
         <input
@@ -64,7 +64,8 @@ export const UploadArea = ({
           type="file"
           className="hidden"
           accept="image/*"
-          onChange={(e) => e.target.files && onFileSelect(e.target.files[0])}
+          multiple
+          onChange={(e) => e.target.files && onFileSelect(e.target.files)}
         />
       </div>
     </div>

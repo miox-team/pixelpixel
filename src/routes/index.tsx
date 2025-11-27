@@ -1,28 +1,37 @@
 import { useEffect, useRef, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import JSZip from 'jszip'
 import { GlobalStyles } from '../components/GlobalStyles'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { UploadArea } from '../components/UploadArea'
 import { Toolbar } from '../components/Toolbar'
 import { CanvasEditor } from '../components/CanvasEditor'
+import { ImageGallery } from '../components/ImageGallery'
 import { getCanvasCoords, isValidSelection, pixelate } from '../utils/canvas'
 import { IMAGE_FORMAT } from '../constants'
 
 export const Route = createFileRoute('/')({ component: App })
 
+interface ImageItem {
+  id: string
+  file: File
+  src: string
+  history: Array<ImageData>
+  historyStep: number
+  isProcessed: boolean
+}
+
 export default function App() {
   // State
-  const [file, setFile] = useState<File | null>(null)
-  const [imageSrc, setImageSrc] = useState<string | null>(null)
+  const [images, setImages] = useState<ImageItem[]>([])
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null)
   const [pixelSize, setPixelSize] = useState(12)
   const [isDragging, setIsDragging] = useState(false)
 
   // Canvas State
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [history, setHistory] = useState<Array<ImageData>>([])
-  const [historyStep, setHistoryStep] = useState(-1)
 
   // Selection State
   const [isDrawing, setIsDrawing] = useState(false)
@@ -36,14 +45,27 @@ export default function App() {
     null,
   )
 
+  // Get currently selected image
+  const selectedImage = images.find((img) => img.id === selectedImageId)
+
   // --- FILE HANDLING ---
 
-  const handleFile = (selectedFile: File) => {
-    const url = URL.createObjectURL(selectedFile)
-    setFile(selectedFile)
-    setImageSrc(url)
-    setHistory([])
-    setHistoryStep(-1)
+  const handleFiles = (fileList: FileList) => {
+    const newImages: ImageItem[] = Array.from(fileList).map((file) => ({
+      id: `${Date.now()}-${Math.random()}`,
+      file,
+      src: URL.createObjectURL(file),
+      history: [],
+      historyStep: -1,
+      isProcessed: false,
+    }))
+
+    setImages((prev) => [...prev, ...newImages])
+
+    // Select the first image if none selected
+    if (!selectedImageId && newImages.length > 0) {
+      setSelectedImageId(newImages[0].id)
+    }
   }
 
   const onDragOver = (e: React.DragEvent) => {
@@ -60,18 +82,31 @@ export default function App() {
     e.preventDefault()
     setIsDragging(false)
     if (e.dataTransfer.files.length > 0) {
-      handleFile(e.dataTransfer.files[0])
+      handleFiles(e.dataTransfer.files)
     }
+  }
+
+  const handleRemoveImage = (id: string) => {
+    setImages((prev) => {
+      const filtered = prev.filter((img) => img.id !== id)
+      // If we removed the selected image, select another one
+      if (selectedImageId === id && filtered.length > 0) {
+        setSelectedImageId(filtered[0].id)
+      } else if (filtered.length === 0) {
+        setSelectedImageId(null)
+      }
+      return filtered
+    })
   }
 
   // --- CANVAS INITIALIZATION ---
 
   useEffect(() => {
-    if (!imageSrc || !canvasRef.current) return
+    if (!selectedImage || !canvasRef.current) return
 
     const img = new Image()
     img.crossOrigin = 'anonymous'
-    img.src = imageSrc
+    img.src = selectedImage.src
     img.onload = () => {
       const canvas = canvasRef.current
       if (!canvas) return
@@ -81,13 +116,32 @@ export default function App() {
       canvas.width = img.width
       canvas.height = img.height
 
-      ctx.drawImage(img, 0, 0)
+      // If this image already has history, restore the current state
+      if (selectedImage.history.length > 0) {
+        const currentData =
+          selectedImage.history[selectedImage.historyStep]
+        ctx.putImageData(currentData, 0, 0)
+      } else {
+        // First time loading this image
+        ctx.drawImage(img, 0, 0)
+        const initialData = ctx.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        )
 
-      const initialData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-      setHistory([initialData])
-      setHistoryStep(0)
+        // Update the image with initial history
+        setImages((prev) =>
+          prev.map((item) =>
+            item.id === selectedImage.id
+              ? { ...item, history: [initialData], historyStep: 0 }
+              : item,
+          ),
+        )
+      }
     }
-  }, [imageSrc])
+  }, [selectedImageId, selectedImage?.src])
 
   // --- DRAWING HANDLERS ---
 
@@ -114,7 +168,8 @@ export default function App() {
       !isDrawing ||
       !startPos ||
       !currentPos ||
-      !canvasRef.current
+      !canvasRef.current ||
+      !selectedImage
     )
       return
     setIsDrawing(false)
@@ -139,9 +194,22 @@ export default function App() {
       canvasRef.current.width,
       canvasRef.current.height,
     )
-    const newHistory = history.slice(0, historyStep + 1)
-    setHistory([...newHistory, newData])
-    setHistoryStep((prev) => prev + 1)
+
+    // Update the selected image's history
+    setImages((prev) =>
+      prev.map((item) => {
+        if (item.id === selectedImage.id) {
+          const newHistory = item.history.slice(0, item.historyStep + 1)
+          return {
+            ...item,
+            history: [...newHistory, newData],
+            historyStep: item.historyStep + 1,
+            isProcessed: true,
+          }
+        }
+        return item
+      }),
+    )
 
     setStartPos(null)
     setCurrentPos(null)
@@ -155,33 +223,99 @@ export default function App() {
   // --- ACTIONS ---
 
   const handleUndo = () => {
-    if (historyStep > 0 && canvasRef.current) {
-      const ctx = canvasRef.current.getContext('2d')
-      if (!ctx) return
-      const prevData = history[historyStep - 1]
-      ctx.putImageData(prevData, 0, 0)
-      setHistoryStep((prev) => prev - 1)
-    }
+    if (!selectedImage || selectedImage.historyStep <= 0 || !canvasRef.current)
+      return
+
+    const ctx = canvasRef.current.getContext('2d')
+    if (!ctx) return
+
+    const prevData = selectedImage.history[selectedImage.historyStep - 1]
+    ctx.putImageData(prevData, 0, 0)
+
+    setImages((prev) =>
+      prev.map((item) =>
+        item.id === selectedImage.id
+          ? { ...item, historyStep: item.historyStep - 1 }
+          : item,
+      ),
+    )
   }
 
   const handleReset = () => {
-    if (history.length > 0 && canvasRef.current) {
-      const ctx = canvasRef.current.getContext('2d')
-      if (!ctx) return
-      ctx.putImageData(history[0], 0, 0)
-      setHistoryStep(0)
-    }
+    if (
+      !selectedImage ||
+      selectedImage.history.length === 0 ||
+      !canvasRef.current
+    )
+      return
+
+    const ctx = canvasRef.current.getContext('2d')
+    if (!ctx) return
+
+    ctx.putImageData(selectedImage.history[0], 0, 0)
+
+    setImages((prev) =>
+      prev.map((item) =>
+        item.id === selectedImage.id
+          ? { ...item, historyStep: 0, isProcessed: false }
+          : item,
+      ),
+    )
   }
 
-  const handleDownload = (): void => {
-    if (!canvasRef.current || !file) {
+  const handleDownload = async (): Promise<void> => {
+    if (images.length === 0) return
+
+    // If only one image, download it directly
+    if (images.length === 1) {
+      const image = images[0]
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx || image.history.length === 0) return
+
+      const currentData = image.history[image.historyStep]
+      canvas.width = currentData.width
+      canvas.height = currentData.height
+      ctx.putImageData(currentData, 0, 0)
+
+      const dataUrl = canvas.toDataURL(IMAGE_FORMAT)
+      const link = document.createElement('a')
+      link.download = `pixelpixel-${image.file.name}`
+      link.href = dataUrl
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
       return
     }
 
-    const dataUrl = canvasRef.current.toDataURL(IMAGE_FORMAT)
+    // Multiple images: create a ZIP file
+    const zip = new JSZip()
+
+    for (const image of images) {
+      if (image.history.length === 0) continue
+
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) continue
+
+      const currentData = image.history[image.historyStep]
+      canvas.width = currentData.width
+      canvas.height = currentData.height
+      ctx.putImageData(currentData, 0, 0)
+
+      // Convert canvas to blob
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((b) => resolve(b!), IMAGE_FORMAT)
+      })
+
+      zip.file(`pixelpixel-${image.file.name}`, blob)
+    }
+
+    // Generate and download ZIP
+    const zipBlob = await zip.generateAsync({ type: 'blob' })
     const link = document.createElement('a')
-    link.download = `pixelpixel-${file.name}`
-    link.href = dataUrl
+    link.download = `pixelpixel-images-${Date.now()}.zip`
+    link.href = URL.createObjectURL(zipBlob)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -195,40 +329,76 @@ export default function App() {
       <Header />
 
       <main className="pt-32 pb-16 px-6 max-w-7xl mx-auto min-h-[calc(100vh-80px)] relative z-10">
-        {!imageSrc ? (
+        {images.length === 0 ? (
           <UploadArea
             isDragging={isDragging}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
             onDrop={onDrop}
-            onFileSelect={handleFile}
+            onFileSelect={handleFiles}
           />
         ) : (
           <div className="flex flex-col lg:flex-row gap-8 h-full animate-in fade-in zoom-in-95 duration-500">
-            <Toolbar
-              pixelSize={pixelSize}
-              onPixelSizeChange={setPixelSize}
-              onUndo={handleUndo}
-              onReset={handleReset}
-              canUndo={historyStep > 0}
-            />
+            <div className="lg:w-80 flex flex-col gap-6 order-2 lg:order-1">
+              <ImageGallery
+                images={images}
+                selectedId={selectedImageId}
+                onSelectImage={setSelectedImageId}
+                onRemoveImage={handleRemoveImage}
+              />
 
-            <CanvasEditor
-              canvasRef={canvasRef}
-              containerRef={containerRef}
-              file={file}
-              isDrawing={isDrawing}
-              startPos={startPos}
-              currentPos={currentPos}
-              mousePos={mousePos}
-              pixelSize={pixelSize}
-              onStartDraw={startDraw}
-              onMoveDraw={moveDraw}
-              onEndDraw={endDraw}
-              onMouseLeave={handleMouseLeave}
-              onClose={() => setImageSrc(null)}
-              onDownload={handleDownload}
-            />
+              <Toolbar
+                pixelSize={pixelSize}
+                onPixelSizeChange={setPixelSize}
+                onUndo={handleUndo}
+                onReset={handleReset}
+                canUndo={(selectedImage?.historyStep ?? 0) > 0}
+              />
+
+              <div className="bg-white p-4 border border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                <label
+                  htmlFor="add-more"
+                  className="block w-full text-center py-2 px-4 border-2 border-dashed border-gray-300 hover:border-lime-400 cursor-pointer transition-colors text-sm font-mono uppercase tracking-widest"
+                >
+                  + Add More Images
+                </label>
+                <input
+                  id="add-more"
+                  type="file"
+                  className="hidden"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => e.target.files && handleFiles(e.target.files)}
+                />
+              </div>
+            </div>
+
+            {selectedImage && (
+              <CanvasEditor
+                canvasRef={canvasRef}
+                containerRef={containerRef}
+                file={selectedImage.file}
+                isDrawing={isDrawing}
+                startPos={startPos}
+                currentPos={currentPos}
+                mousePos={mousePos}
+                pixelSize={pixelSize}
+                onStartDraw={startDraw}
+                onMoveDraw={moveDraw}
+                onEndDraw={endDraw}
+                onMouseLeave={handleMouseLeave}
+                onClose={() => {
+                  setImages([])
+                  setSelectedImageId(null)
+                }}
+                onDownload={handleDownload}
+                downloadButtonText={
+                  images.length === 1
+                    ? 'Download Image'
+                    : `Download All (${images.length} images as ZIP)`
+                }
+              />
+            )}
           </div>
         )}
       </main>
