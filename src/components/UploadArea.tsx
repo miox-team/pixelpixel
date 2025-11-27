@@ -19,9 +19,6 @@ export const UploadArea = ({
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
       <div className="space-y-6 max-w-4xl">
-        <div className="flex justify-center">
-          <Badge>v2.0 AI ENABLED</Badge>
-        </div>
         <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-black">
           HIDE WHAT <br />
           <span className="relative inline-block px-4">
@@ -32,10 +29,10 @@ export const UploadArea = ({
           </span>
         </h1>
         <p className="text-xl md:text-2xl text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-          The privacy-first image editor.
+          The privacy-first image editor for the modern web.
           <span className="font-medium text-black">
             {' '}
-            Blur plates, redact text, or remove backgrounds
+            Blur plates, faces, and data
           </span>{' '}
           without uploading a single byte.
         </p>
@@ -67,12 +64,9 @@ export const UploadArea = ({
           type="file"
           className="hidden"
           accept="image/*"
-          onChange={(e) =>
-            e.target.files && onFileSelect(e.target.files[0])
-          }
+          onChange={(e) => e.target.files && onFileSelect(e.target.files[0])}
         />
       </div>
     </div>
   )
 }
-

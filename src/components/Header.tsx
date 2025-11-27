@@ -8,7 +8,7 @@ export const Header = () => (
         onClick={() => window.location.reload()}
       >
         <img
-          src="http://googleusercontent.com/image_generation_content/1"
+          src="/logo.png"
           className="w-10 h-10 object-cover bg-black shadow-[4px_4px_0px_0px_rgba(163,230,53,1)] transition-transform group-hover:translate-y-[-2px] border border-black"
           alt="PixelPixel Logo"
         />
