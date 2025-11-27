@@ -6,8 +6,6 @@ import { Footer } from '../components/Footer'
 import { UploadArea } from '../components/UploadArea'
 import { Toolbar } from '../components/Toolbar'
 import { CanvasEditor } from '../components/CanvasEditor'
-import { removeBackground } from '../services/backgroundRemoval'
-import { performPrivacyAudit } from '../services/gemini'
 import { getCanvasCoords, isValidSelection, pixelate } from '../utils/canvas'
 import { IMAGE_FORMAT } from '../constants'
 
@@ -19,11 +17,6 @@ export default function App() {
   const [imageSrc, setImageSrc] = useState<string | null>(null)
   const [pixelSize, setPixelSize] = useState(12)
   const [isDragging, setIsDragging] = useState(false)
-
-  // Processing States
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [isAuditing, setIsAuditing] = useState(false)
-  const [auditReport, setAuditReport] = useState<string | null>(null)
 
   // Canvas State
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -51,7 +44,6 @@ export default function App() {
     setImageSrc(url)
     setHistory([])
     setHistoryStep(-1)
-    setAuditReport(null)
   }
 
   const onDragOver = (e: React.DragEvent) => {
@@ -100,7 +92,7 @@ export default function App() {
   // --- DRAWING HANDLERS ---
 
   const startDraw = (e: React.MouseEvent | React.TouchEvent) => {
-    if (isProcessing || isAuditing || !canvasRef.current) return
+    if (!canvasRef.current) return
     setIsDrawing(true)
     const coords = getCanvasCoords(e, canvasRef.current)
     setStartPos(coords)
@@ -108,7 +100,7 @@ export default function App() {
   }
 
   const moveDraw = (e: React.MouseEvent | React.TouchEvent) => {
-    if (isProcessing || isAuditing || !canvasRef.current) return
+    if (!canvasRef.current) return
     const coords = getCanvasCoords(e, canvasRef.current)
     
     if (isDrawing) {
@@ -122,9 +114,7 @@ export default function App() {
       !isDrawing ||
       !startPos ||
       !currentPos ||
-      !canvasRef.current ||
-      isProcessing ||
-      isAuditing
+      !canvasRef.current
     )
       return
     setIsDrawing(false)
@@ -162,64 +152,6 @@ export default function App() {
     setMousePos(null)
   }
 
-  // --- AI FEATURES ---
-
-  const handleRemoveBg = async (): Promise<void> => {
-    if (!imageSrc || !canvasRef.current) {
-      return
-    }
-
-    setIsProcessing(true)
-
-    try {
-      const processedBlob = await removeBackground(canvasRef.current)
-      const newImageUrl = URL.createObjectURL(processedBlob)
-
-      // Clean up previous object URL to prevent memory leaks
-      if (imageSrc.startsWith('blob:')) {
-        URL.revokeObjectURL(imageSrc)
-      }
-
-      setImageSrc(newImageUrl)
-    } catch (error) {
-      // Only log in development
-      if (import.meta.env.DEV) {
-        console.error('Background removal failed:', error)
-      }
-
-      alert(
-        'Unable to load AI model. This feature requires a less restricted environment (like a local server) to fetch external AI models/WASM files. Please try cloning the project locally.',
-      )
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  const handlePrivacyAudit = async (): Promise<void> => {
-    if (!canvasRef.current) {
-      return
-    }
-
-    setIsAuditing(true)
-    setAuditReport(null)
-
-    try {
-      const reportText = await performPrivacyAudit(canvasRef.current)
-      setAuditReport(reportText)
-    } catch (error) {
-      // Only log in development
-      if (import.meta.env.DEV) {
-        console.error('Gemini Audit failed:', error)
-      }
-
-      setAuditReport(
-        'Connection error. Unable to reach privacy audit servers.',
-      )
-    } finally {
-      setIsAuditing(false)
-    }
-  }
-
   // --- ACTIONS ---
 
   const handleUndo = () => {
@@ -238,7 +170,6 @@ export default function App() {
       if (!ctx) return
       ctx.putImageData(history[0], 0, 0)
       setHistoryStep(0)
-      setAuditReport(null)
     }
   }
 
@@ -279,10 +210,6 @@ export default function App() {
               onPixelSizeChange={setPixelSize}
               onUndo={handleUndo}
               onReset={handleReset}
-              onPrivacyAudit={handlePrivacyAudit}
-              onRemoveBg={handleRemoveBg}
-              isProcessing={isProcessing}
-              isAuditing={isAuditing}
               canUndo={historyStep > 0}
             />
 
@@ -290,21 +217,17 @@ export default function App() {
               canvasRef={canvasRef}
               containerRef={containerRef}
               file={file}
-              isProcessing={isProcessing}
               isDrawing={isDrawing}
               startPos={startPos}
               currentPos={currentPos}
               mousePos={mousePos}
               pixelSize={pixelSize}
-              auditReport={auditReport}
               onStartDraw={startDraw}
               onMoveDraw={moveDraw}
               onEndDraw={endDraw}
               onMouseLeave={handleMouseLeave}
               onClose={() => setImageSrc(null)}
               onDownload={handleDownload}
-              onCloseAudit={() => setAuditReport(null)}
-              isAuditing={isAuditing}
             />
           </div>
         )}

@@ -4,8 +4,6 @@ export { CanvasEditor } from './CanvasEditor'
 export { Footer } from './Footer'
 export { GlobalStyles } from './GlobalStyles'
 export { Header } from './Header'
-export { ProcessingOverlay } from './ProcessingOverlay'
 export { Toolbar } from './Toolbar'
 export { UploadArea } from './UploadArea'
-export { AuditReport } from './AuditReport'
 

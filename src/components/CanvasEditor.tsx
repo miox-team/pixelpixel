@@ -1,49 +1,39 @@
 import { Download, Scan } from 'lucide-react'
 import { Button } from './Button'
-import { ProcessingOverlay } from './ProcessingOverlay'
-import { AuditReport } from './AuditReport'
 import type { RefObject } from 'react'
 
 interface CanvasEditorProps {
   canvasRef: RefObject<HTMLCanvasElement | null>
   containerRef: RefObject<HTMLDivElement | null>
   file: File | null
-  isProcessing: boolean
   isDrawing: boolean
   startPos: { x: number; y: number } | null
   currentPos: { x: number; y: number } | null
   mousePos: { x: number; y: number } | null
   pixelSize: number
-  auditReport: string | null
   onStartDraw: (e: React.MouseEvent | React.TouchEvent) => void
   onMoveDraw: (e: React.MouseEvent | React.TouchEvent) => void
   onEndDraw: () => void
   onMouseLeave?: () => void
   onClose: () => void
   onDownload: () => void
-  onCloseAudit: () => void
-  isAuditing: boolean
 }
 
 export const CanvasEditor = ({
   canvasRef,
   containerRef,
   file,
-  isProcessing,
   isDrawing,
   startPos,
   currentPos,
   mousePos,
   pixelSize,
-  auditReport,
   onStartDraw,
   onMoveDraw,
   onEndDraw,
   onMouseLeave,
   onClose,
   onDownload,
-  onCloseAudit,
-  isAuditing,
 }: CanvasEditorProps) => {
   // Calculate overlay style for selection area
   const getOverlayStyle = () => {
@@ -92,12 +82,6 @@ export const CanvasEditor = ({
           {file && `${Math.round(file.size / 1024)} KB`}
         </span>
       </div>
-
-      {/* Processing Overlay */}
-      {isProcessing && <ProcessingOverlay />}
-
-      {/* Audit Report Overlay */}
-      {auditReport && <AuditReport report={auditReport} onClose={onCloseAudit} />}
 
       <div
         ref={containerRef}
@@ -168,7 +152,6 @@ export const CanvasEditor = ({
           variant="primary"
           onClick={onDownload}
           icon={Download}
-          disabled={isProcessing || isAuditing}
         >
           Download Image
         </Button>
