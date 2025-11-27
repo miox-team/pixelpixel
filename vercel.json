@@ -1,11 +1,5 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/client",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api"
-    }
-  ]
+  "outputDirectory": ".output/public"
 }
 
