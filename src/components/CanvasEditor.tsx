@@ -73,7 +73,7 @@ export const CanvasEditor = ({
 
   const overlayStyle = getOverlayStyle()
   return (
-    <div className="flex-1 bg-[#1a1a1a] border border-black shadow-2xl order-2 lg:order-2 flex flex-col relative overflow-hidden group">
+    <div className="flex-1 bg-[#1a1a1a] border border-black shadow-2xl order-2 flex flex-col relative overflow-hidden group">
       {/* Canvas Header */}
       <div className="bg-black/50 backdrop-blur-sm p-3 flex justify-between items-center px-4 border-b border-white/10 absolute top-0 w-full z-10">
         <span className="text-white/60 text-[10px] font-mono tracking-widest uppercase flex items-center gap-2">
@@ -87,19 +87,37 @@ export const CanvasEditor = ({
 
       <div
         ref={containerRef}
-        className="flex-1 relative overflow-auto flex items-center justify-center p-2 lg:p-8 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] cursor-crosshair min-h-[50vh] lg:min-h-0"
+        className="flex-1 relative overflow-auto flex items-center justify-center p-2 lg:p-8 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] cursor-crosshair min-h-[50vh] lg:min-h-0 touch-none lg:touch-auto"
+        style={{ touchAction: 'none', overscrollBehavior: 'none' }}
         onMouseDown={onStartDraw}
         onMouseMove={onMoveDraw}
         onMouseUp={onEndDraw}
         onMouseLeave={onMouseLeave || onEndDraw}
-        onTouchStart={onStartDraw}
-        onTouchMove={onMoveDraw}
-        onTouchEnd={onEndDraw}
+        onTouchStart={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          onStartDraw(e)
+        }}
+        onTouchMove={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          onMoveDraw(e)
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          onEndDraw()
+        }}
+        onTouchCancel={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          onEndDraw()
+        }}
       >
         <canvas
           ref={canvasRef}
           className="max-w-full max-h-[calc(100vh-300px)] lg:max-h-[70vh] object-contain shadow-[0px_0px_40px_rgba(0,0,0,0.5)]"
-          style={{ imageRendering: 'pixelated' }}
+          style={{ imageRendering: 'pixelated', touchAction: 'none' }}
         />
 
         {/* Selection Overlay - shows area that will be pixelated */}

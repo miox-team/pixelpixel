@@ -338,7 +338,7 @@ export default function App() {
         ) : (
           <div className="flex flex-col lg:flex-row gap-3 lg:gap-8 h-full animate-in fade-in zoom-in-95 duration-500">
             {/* Mobile: Toolbar and ImageGallery above canvas */}
-            <div className="lg:w-80 flex flex-col gap-6 order-1 lg:order-1">
+            <div className="lg:w-80 flex flex-col gap-6 order-1 ">
               {/* Mobile: Show Toolbar first, then ImageGallery (only if more than one image) */}
               <div className="lg:hidden flex flex-col gap-2">
                 <Toolbar
@@ -360,19 +360,19 @@ export default function App() {
 
               {/* Desktop: Original sidebar layout */}
               <div className="hidden lg:flex flex-col gap-6">
-                <ImageGallery
-                  images={images}
-                  selectedId={selectedImageId}
-                  onSelectImage={setSelectedImageId}
-                  onRemoveImage={handleRemoveImage}
-                />
-
                 <Toolbar
                   pixelSize={pixelSize}
                   onPixelSizeChange={setPixelSize}
                   onUndo={handleUndo}
                   onReset={handleReset}
                   canUndo={(selectedImage?.historyStep ?? 0) > 0}
+                />
+
+                <ImageGallery
+                  images={images}
+                  selectedId={selectedImageId}
+                  onSelectImage={setSelectedImageId}
+                  onRemoveImage={handleRemoveImage}
                 />
 
                 <div className="bg-white dark:bg-gray-900 p-4 border border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">

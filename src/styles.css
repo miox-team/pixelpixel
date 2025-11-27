@@ -9,6 +9,8 @@
 
 html {
   background-color: #f4f4f5;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 html.dark {
@@ -21,6 +23,8 @@ body {
   background-color: #f4f4f5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior-y: none;
 }
 
 html.dark body {
