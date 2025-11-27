@@ -1,9 +1,11 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, useLocation } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { useEffect } from 'react'
 
 import appCss from '../styles.css?url'
 import { ThemeProvider } from '../contexts/ThemeContext'
+import { initGoogleAnalytics, isGoogleAnalyticsEnabled, trackPageView } from '../utils/analytics'
 
 const SITE_URL = 'https://pixelpixel.app'
 const SITE_NAME = 'PixelPixel'
@@ -147,6 +149,18 @@ export const Route = createRootRoute({
         href: 'https://fonts.gstatic.com',
         crossOrigin: 'anonymous',
       },
+      ...(isGoogleAnalyticsEnabled()
+        ? [
+            {
+              rel: 'preconnect',
+              href: 'https://www.googletagmanager.com',
+            },
+            {
+              rel: 'preconnect',
+              href: 'https://www.google-analytics.com',
+            },
+          ]
+        : []),
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap',
@@ -185,29 +199,53 @@ export const Route = createRootRoute({
       {
         rel: 'apple-touch-icon',
         sizes: '180x180',
-        href: '/logo192.png',
+        href: '/favicon.png',
       },
       {
         rel: 'apple-touch-icon',
         sizes: '192x192',
-        href: '/logo192.png',
+        href: '/favicon.png',
       },
       {
         rel: 'apple-touch-icon',
         sizes: '512x512',
-        href: '/logo512.png',
+        href: '/favicon.png',
       },
       {
         rel: 'manifest',
         href: '/manifest.json',
       },
     ],
+    scripts: isGoogleAnalyticsEnabled()
+      ? [
+          {
+            src: `https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GA_MEASUREMENT_ID}`,
+            async: true,
+          },
+        ]
+      : [],
   }),
 
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const location = useLocation()
+
+  // Initialize Google Analytics on mount
+  useEffect(() => {
+    if (isGoogleAnalyticsEnabled()) {
+      initGoogleAnalytics()
+    }
+  }, [])
+
+  // Track page views on route changes
+  useEffect(() => {
+    if (isGoogleAnalyticsEnabled()) {
+      trackPageView(location.pathname, document.title)
+    }
+  }, [location.pathname])
+
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
@@ -252,6 +290,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `
+            <!-- Google Tag Manager -->
+
+<!-- End Google Tag Manager -->
               (function() {
                 const saved = localStorage.getItem('theme');
                 if (saved === 'dark') {
