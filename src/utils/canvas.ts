@@ -69,3 +69,4 @@ export const isValidSelection = (width: number, height: number): boolean => {
   return Math.abs(width) >= MIN_SELECTION_SIZE && Math.abs(height) >= MIN_SELECTION_SIZE
 }
 
+

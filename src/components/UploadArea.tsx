@@ -56,7 +56,7 @@ export const UploadArea = ({
             Drop your images here
           </p>
           <p className="text-xs text-gray-400 dark:text-gray-500 font-mono uppercase tracking-widest">
-            JPG · PNG · WEBP · Max 50MB each · Multiple files
+            JPG · PNG · WEBP · Max 50MB each · Multiple files · Paste (Ctrl/Cmd+V)
           </p>
         </div>
         <input

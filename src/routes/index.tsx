@@ -67,6 +67,52 @@ export default function App() {
     }
   }
 
+  // Handle paste events for clipboard images
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items
+      if (!items) return
+
+      // Find image items in clipboard
+      const imageItems = Array.from(items).filter(
+        (item) => item.type.indexOf('image') !== -1,
+      )
+
+      if (imageItems.length === 0) return
+
+      e.preventDefault()
+
+      // Convert clipboard images to Files
+      const files: Array<File> = []
+      for (const item of imageItems) {
+        const blob = item.getAsFile()
+        if (blob) {
+          // Create a File object with a meaningful name
+          const file = new File(
+            [blob],
+            `pasted-image-${Date.now()}.${blob.type.split('/')[1] || 'png'}`,
+            { type: blob.type },
+          )
+          files.push(file)
+        }
+      }
+
+      if (files.length > 0) {
+        // Create a FileList-like object
+        const dataTransfer = new DataTransfer()
+        files.forEach((file) => dataTransfer.items.add(file))
+        handleFiles(dataTransfer.files)
+      }
+    }
+
+    // Add paste event listener to document
+    document.addEventListener('paste', handlePaste)
+
+    return () => {
+      document.removeEventListener('paste', handlePaste)
+    }
+  }, [])
+
   const onDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(true)
