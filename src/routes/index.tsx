@@ -377,12 +377,10 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f4f5] dark:bg-black text-neutral-900 dark:text-neutral-100 font-display selection:bg-lime-400 dark:selection:bg-lime-500 selection:text-black overflow-x-hidden">
-      <div className="bg-noise"></div>
-
+    <div className="min-h-screen bg-background-light dark:bg-background-dark text-charcoal dark:text-slate-200 font-body flex flex-col">
       <Header />
 
-      <main className="pt-24 lg:pt-32 pb-8 lg:pb-16 px-4 lg:px-6 max-w-7xl mx-auto min-h-[calc(100vh-80px)] relative z-10">
+      <main className="grow">
         {images.length === 0 ? (
           <UploadArea
             isDragging={isDragging}
@@ -392,7 +390,8 @@ export default function App() {
             onFileSelect={handleFiles}
           />
         ) : (
-          <div className="flex flex-col lg:flex-row gap-3 lg:gap-8 h-full animate-in fade-in zoom-in-95 duration-500">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col lg:flex-row gap-3 lg:gap-8 h-full animate-in fade-in zoom-in-95 duration-500">
             {/* Mobile: Toolbar and ImageGallery above canvas */}
             <div className="lg:w-80 flex flex-col gap-6 order-1 ">
               {/* Mobile: Show Toolbar first, then ImageGallery (only if more than one image) */}
@@ -496,6 +495,7 @@ export default function App() {
                 </div>
               </>
             )}
+            </div>
           </div>
         )}
       </main>

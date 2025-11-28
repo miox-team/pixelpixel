@@ -1,6 +1,3 @@
-import { Upload } from 'lucide-react'
-import { Badge } from './Badge'
-
 interface UploadAreaProps {
   isDragging: boolean
   onDragOver: (e: React.DragEvent) => void
@@ -17,56 +14,57 @@ export const UploadArea = ({
   onFileSelect,
 }: UploadAreaProps) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-      <div className="space-y-6 max-w-4xl">
-        <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-[0.9] text-black dark:text-white">
-          HIDE WHAT <br />
-          <span className="relative inline-block px-4">
-            <span className="absolute inset-0 bg-lime-400 dark:bg-lime-500 transform -skew-x-6 translate-y-2 opacity-50 blur-sm"></span>
-            <span className="relative z-10 bg-lime-400 dark:bg-lime-500 px-4 text-black transform -skew-x-3 inline-block border-2 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]">
-              MATTERS
-            </span>
-          </span>
-        </h1>
-        <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
-          The privacy-first image editor for the modern web.
-          <span className="font-medium text-black dark:text-white">
-            {' '}
-            Blur plates, faces, and data
-          </span>{' '}
-          without uploading a single byte.
-        </p>
-      </div>
-
-      <div
-        className={`
-          group relative w-full max-w-2xl h-80 border-2 border-dashed rounded-none flex flex-col items-center justify-center gap-6 transition-all cursor-pointer bg-white dark:bg-gray-900
-          ${isDragging ? 'border-lime-500 dark:border-lime-400 bg-lime-50 dark:bg-lime-950 scale-[1.01]' : 'border-gray-300 dark:border-gray-700 hover:border-black dark:hover:border-white hover:bg-gray-50 dark:hover:bg-gray-800'}
-        `}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-        onClick={() => document.getElementById('file-upload')?.click()}
-      >
-        <div className="p-6 bg-black dark:bg-white text-white dark:text-black group-hover:scale-110 transition-transform shadow-[8px_8px_0px_0px_rgba(163,230,53,1)]">
-          <Upload className="w-10 h-10" />
+    <div className="grow flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h2 className="font-display font-black text-5xl md:text-7xl lg:text-8xl tracking-tighter text-charcoal dark:text-white uppercase">
+        Effortlessly Protect
+      </h2>
+      <h2 className="font-display font-black text-5xl md:text-7xl lg:text-8xl tracking-tighter text-charcoal dark:text-white uppercase -mt-2 md:-mt-4">
+        <span className="text-highlight" style={{ '--highlight-color': '#dcfce7' } as React.CSSProperties}>
+          What Matters
+        </span>
+      </h2>
+      <p className="mt-8 max-w-2xl text-lg md:text-xl text-slate-700 dark:text-slate-300">
+        Achieve peace of mind with our intuitive, privacy-first image editor – no
+        uploads, no data stored, just pure security.
+      </p>
+      <div className="mt-12 w-full max-w-2xl">
+        <div
+          className={`relative flex flex-col items-center justify-center w-full h-80 bg-white dark:bg-slate-800/50 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-8 transition-colors ${
+            isDragging
+              ? 'border-primary dark:border-primary bg-green-50 dark:bg-slate-800'
+              : 'hover:border-primary dark:hover:border-primary hover:bg-green-50 dark:hover:bg-slate-800'
+          }`}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+          onClick={() => document.getElementById('file-upload')?.click()}
+        >
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="flex items-center justify-center w-16 h-16 bg-primary rounded-lg shadow-lg">
+              <span className="material-symbols-outlined text-4xl text-white">
+                upload
+              </span>
+            </div>
+            <p className="mt-6 text-lg font-semibold text-charcoal dark:text-white">
+              Drop your images here
+            </p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              JPG · PNG · WEBP · MAX 50MB EACH · MULTIPLE FILES
+            </p>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+              PASTE (CTRL/CMD+V)
+            </p>
+          </div>
+          <input
+            id="file-upload"
+            aria-label="File upload area"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => e.target.files && onFileSelect(e.target.files)}
+          />
         </div>
-        <div className="space-y-2">
-          <p className="font-bold text-2xl tracking-tight text-black dark:text-white">
-            Drop your images here
-          </p>
-          <p className="text-xs text-gray-400 dark:text-gray-500 font-mono uppercase tracking-widest">
-            JPG · PNG · WEBP · Max 50MB each · Multiple files · Paste (Ctrl/Cmd+V)
-          </p>
-        </div>
-        <input
-          id="file-upload"
-          type="file"
-          className="hidden"
-          accept="image/*"
-          multiple
-          onChange={(e) => e.target.files && onFileSelect(e.target.files)}
-        />
       </div>
     </div>
   )

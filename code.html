@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Privacy Image Editor Landing Page</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+    .text-highlight {
+      position: relative;
+      display: inline-block;
+    }
+    .text-highlight::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      right: -8px;
+      bottom: -4px;
+      height: 60%;
+      background-color: var(--highlight-color);
+      z-index: -1;
+      transform: skew(-15deg);
+      border-radius: 4px;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#3f6212", // Deep forest green
+            "background-light": "#fdfaf7", // Warm off-white
+            "background-dark": "#1f2937", // Soft charcoal for dark mode (slightly lighter than original)
+            "charcoal": "#333333", // Soft charcoal for text/elements
+            "forest-green-light": "#84cc16", // A lighter green accent
+            "forest-green-dark": "#166534", // A darker green for dark mode elements
+          },
+          fontFamily: {
+            display: ["Nunito Sans", "sans-serif"],
+            body: ["Nunito Sans", "sans-serif"],
+          },
+          borderRadius: {
+            DEFAULT: "0.5rem", // 8px
+          },
+        },
+      },
+    };
+    // JavaScript to toggle dark mode
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+    }
+  </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-body text-charcoal dark:text-slate-200 flex flex-col min-h-screen">
+<header class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+<nav class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="bg-charcoal dark:bg-slate-200 p-2 rounded">
+<svg class="w-6 h-6 text-background-light dark:text-background-dark" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="currentColor"></path>
+<path d="M12 6C9.79 6 8 7.79 8 10C8 12.21 9.79 14 12 14C14.21 14 16 12.21 16 10C16 7.79 14.21 6 12 6ZM12 12C10.9 12 10 11.1 10 10C10 8.9 10.9 8 12 8C13.1 8 14 8.9 14 10C14 11.1 13.1 12 12 12Z" fill="currentColor"></path>
+<path d="M12 15C9.34 15 4 16.34 4 19V20H20V19C20 16.34 14.66 15 12 15Z" fill="currentColor" opacity="0.3"></path>
+</svg>
+</div>
+<div>
+<h1 class="font-display font-extrabold text-lg text-charcoal dark:text-white">ZenProtect</h1>
+<p class="text-xs text-slate-500 dark:text-slate-400">PRIVACY STUDIO</p>
+</div>
+</div>
+<div class="flex items-center gap-6 text-sm">
+<div class="hidden sm:flex items-center gap-2 text-primary dark:text-forest-green-light">
+<span class="material-symbols-outlined text-base">verified_user</span>
+<span class="font-semibold">Client-Side Secure</span>
+</div>
+<div class="hidden sm:flex items-center gap-2 text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-base">bolt</span>
+<span class="font-semibold">Zero Latency</span>
+</div>
+<button aria-label="Toggle dark mode" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" onclick="toggleDarkMode()">
+<span class="material-symbols-outlined text-charcoal dark:text-slate-400">dark_mode</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center text-center container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+<h2 class="font-display font-black text-5xl md:text-7xl lg:text-8xl tracking-tighter text-charcoal dark:text-white uppercase">
+      Effortlessly Protect
+    </h2>
+<h2 class="font-display font-black text-5xl md:text-7xl lg:text-8xl tracking-tighter text-charcoal dark:text-white uppercase -mt-2 md:-mt-4">
+<span class="text-highlight" style="--highlight-color: #dcfce7;">What Matters</span>
+</h2>
+<p class="mt-8 max-w-2xl text-lg md:text-xl text-slate-700 dark:text-slate-300">
+      Achieve peace of mind with our intuitive, privacy-first image editor – no uploads, no data stored, just pure security.
+    </p>
+<div class="mt-12 w-full max-w-2xl">
+<div class="relative flex flex-col items-center justify-center w-full h-80 bg-white dark:bg-slate-800/50 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-8 transition-colors hover:border-primary dark:hover:border-primary hover:bg-green-50 dark:hover:bg-slate-800">
+<div class="flex flex-col items-center justify-center text-center">
+<div class="flex items-center justify-center w-16 h-16 bg-primary rounded-lg shadow-lg">
+<span class="material-symbols-outlined text-4xl text-white">upload</span>
+</div>
+<p class="mt-6 text-lg font-semibold text-charcoal dark:text-white">Drop your images here</p>
+<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">JPG · PNG · WEBP · MAX 50MB EACH · MULTIPLE FILES</p>
+<p class="mt-1 text-xs text-slate-400 dark:text-slate-500">PASTE (CTRL/CMD+V)</p>
+</div>
+<input aria-label="File upload area" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" multiple="" type="file"/>
+</div>
+</div>
+</main>
+<footer class="w-full">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center text-sm text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800">
+<div class="flex gap-6 mb-4 sm:mb-0">
+<a class="hover:text-primary dark:hover:text-forest-green-light transition-colors" href="#">About</a>
+<a class="hover:text-primary dark:hover:text-forest-green-light transition-colors" href="#">Terms of Service</a>
+<a class="hover:text-primary dark:hover:text-forest-green-light transition-colors" href="#">Source</a>
+</div>
+<div class="flex items-center gap-2">
+<span>Powered by</span>
+<img alt="Tanstack logo" class="h-6 w-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoMIMG5yHEOjdYWn-jig55vZnJ55uv2kZ5rem5PMdLWUJP3B8IiiSbl3Ax51lwiv7QxpA82996HbCuVM3QevElZypqsqzGXPyaSCg-KTb78arWDOqyXua75e9dM4dEhqo22pQE-bnSJfDdp9AyifHLxfvqTxxZMIBx0kp_TdV6n-rcWCUvEO9wXDglolNkWnNh-6aB6v83X8MKWRI3iEW0qtIIYgAxN8Tuht28-UVkWhdLqZYQY5wSA_3ec0hukLlIn2-0dSFLfH7B"/>
+</div>
+</div>
+</footer>
+</body></html>
